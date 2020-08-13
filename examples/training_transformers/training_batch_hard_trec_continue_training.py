@@ -17,7 +17,7 @@ In a batch, it checks for sent1 with label A what is the other sentence with lab
 which sentence with another label is the closest (hard negative example). It then tries to optimize this, i.e.
 all sentences with the same label should be close and sentences for different labels should be clearly seperated.
 """
-
+import argparse
 import logging
 import os
 import random
@@ -157,17 +157,15 @@ def triplets_from_labeled_dataset(input_examples):
     return triplets
 
 
-if __name__ == '__main__':
+def main(filename):
     logging.basicConfig(
         format="%(asctime)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.INFO,
         handlers=[LoggingHandler()],
     )
-
     # You can specify any huggingface/transformers pre-trained model here, for example, bert-base-uncased, roberta-base, xlm-roberta-base
     model_name = 'distilbert-base-nli-stsb-mean-tokens'
-
     ### Create a torch.DataLoader that passes training batch instances to our model
     train_batch_size = 32
     output_path = (
@@ -177,13 +175,10 @@ if __name__ == '__main__':
             + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     )
     num_epochs = 1
-
     logging.info("Loading aspect dataset")
-    train_set, dev_set, test_set = aspect_data()
-
+    train_set, dev_set, test_set = aspect_data(filename)
     # Load pretrained model
     model = SentenceTransformer(model_name)
-
     logging.info("Read TREC train dataset")
     train_dataset = SentenceLabelDataset(
         examples=train_set,
@@ -192,28 +187,22 @@ if __name__ == '__main__':
         provide_negative=False,
     )
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=train_batch_size)
-
     ### Triplet losses ####################
     ### There are 3 triplet loss variants:
     ### - BatchHardTripletLoss
     ### - BatchHardSoftMarginTripletLoss
     ### - BatchSemiHardTripletLoss
     #######################################
-
     # train_loss = losses.BatchHardTripletLoss(sentence_embedder=model)
     # train_loss = losses.BatchHardSoftMarginTripletLoss(sentence_embedder=model)
     train_loss = losses.BatchSemiHardTripletLoss(sentence_embedder=model)
-
     logging.info("Read TREC val dataset")
     dev_evaluator = TripletEvaluator.from_input_examples(dev_set, name='dev')
-
     logging.info("Performance before fine-tuning:")
     dev_evaluator(model)
-
     warmup_steps = int(
         len(train_dataset) * num_epochs / train_batch_size * 0.1
     )  # 10% of train data
-
     # Train the model
     model.fit(
         train_objectives=[(train_dataloader, train_loss)],
@@ -223,13 +212,22 @@ if __name__ == '__main__':
         warmup_steps=warmup_steps,
         output_path=output_path,
     )
-
     ##############################################################################
     #
     # Load the stored model and evaluate its performance on TREC dataset
     #
     ##############################################################################
-
     logging.info("Evaluating model on test set")
     test_evaluator = TripletEvaluator.from_input_examples(test_set, name='test')
     model.evaluate(test_evaluator)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument('--merge_file', help='3.2 merge file',
+                        required=True)
+    args = parser.parse_args()
+    main(args.merge_file)
