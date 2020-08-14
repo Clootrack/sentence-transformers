@@ -106,6 +106,7 @@ def aspect_data(filename: str):
         for sentence in sentences:
             input_object = InputExample(guid=str(guid), texts=[sentence], label=aspects.index(aspect))
             aspect_input_map[aspect].append(input_object)
+            guid = guid + 1
 
     for aspect, input_objects in aspect_input_map.items():
         train, test, dev = get_test_train_dev_set(input_objects)
