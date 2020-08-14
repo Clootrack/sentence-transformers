@@ -165,7 +165,7 @@ def main(filename):
         handlers=[LoggingHandler()],
     )
     # You can specify any huggingface/transformers pre-trained model here, for example, bert-base-uncased, roberta-base, xlm-roberta-base
-    model_name = 'distilbert-base-nli-stsb-mean-tokens'
+    model_name = 'bert-large-nli-stsb-mean-tokens'
     ### Create a torch.DataLoader that passes training batch instances to our model
     train_batch_size = 32
     output_path = (
@@ -196,7 +196,7 @@ def main(filename):
     # train_loss = losses.BatchHardTripletLoss(sentence_embedder=model)
     # train_loss = losses.BatchHardSoftMarginTripletLoss(sentence_embedder=model)
     train_loss = losses.BatchSemiHardTripletLoss(sentence_embedder=model)
-    logging.info("Read TREC val dataset")
+    logging.info("Read aspect val dataset")
     dev_evaluator = TripletEvaluator.from_input_examples(dev_set, name='dev')
     logging.info("Performance before fine-tuning:")
     dev_evaluator(model)
