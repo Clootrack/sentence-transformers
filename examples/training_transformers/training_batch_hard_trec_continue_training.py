@@ -141,7 +141,7 @@ def triplets_from_labeled_dataset(input_examples):
         label2sentence[inp_example.label].append(inp_example)
 
     for index, inp_example in enumerate(input_examples):
-        if index % 500 == 0:
+        if index % 50 == 0:
             print(f'{index} done out of {len(input_examples)}')
         anchor = inp_example
 
