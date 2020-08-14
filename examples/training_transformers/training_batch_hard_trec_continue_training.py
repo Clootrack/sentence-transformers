@@ -115,7 +115,9 @@ def aspect_data(filename: str):
 
     # For dev & test set, we return triplets (anchor, positive, negative)
     random.seed(42)  # Fix seed, so that we always get the same triplets
+    print("Dev Triplets generation")
     dev_triplets = triplets_from_labeled_dataset(dev_set)
+    print("Test Triplets generation")
     test_triplets = triplets_from_labeled_dataset(test_set)
     return train_set, dev_triplets, test_triplets
 
@@ -138,7 +140,9 @@ def triplets_from_labeled_dataset(input_examples):
     for inp_example in input_examples:
         label2sentence[inp_example.label].append(inp_example)
 
-    for inp_example in input_examples:
+    for index, inp_example in enumerate(input_examples):
+        if index % 500 == 0:
+            print(f'{index} done out of {len(input_examples)}')
         anchor = inp_example
 
         if len(label2sentence[inp_example.label]) < 2:  # We need at least 2 examples per label to create a triplet
@@ -179,7 +183,7 @@ def main(filename):
     train_set, dev_set, test_set = aspect_data(filename)
     # Load pretrained model
     model = SentenceTransformer(model_name)
-    logging.info("Read TREC train dataset")
+    logging.info("Read aspect train dataset")
     train_dataset = SentenceLabelDataset(
         examples=train_set,
         model=model,
