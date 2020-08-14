@@ -172,7 +172,7 @@ def main(filename):
     # You can specify any huggingface/transformers pre-trained model here, for example, bert-base-uncased, roberta-base, xlm-roberta-base
     model_name = 'bert-large-nli-stsb-mean-tokens'
     ### Create a torch.DataLoader that passes training batch instances to our model
-    train_batch_size = 32
+    train_batch_size = 16
     output_path = (
             "output/finetune-batch-hard-trec-"
             + model_name
