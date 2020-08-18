@@ -236,4 +236,5 @@ if __name__ == '__main__':
                         required=True)
     args = parser.parse_args()
     for epoch in range(1, 11):
+        print(f"Running for epoch {epoch}")
         main(args.merge_file, epoch)
