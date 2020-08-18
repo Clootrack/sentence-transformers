@@ -162,7 +162,7 @@ def triplets_from_labeled_dataset(input_examples):
     return triplets
 
 
-def main(filename):
+def main(filename, epochs):
     logging.basicConfig(
         format="%(asctime)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -175,11 +175,11 @@ def main(filename):
     train_batch_size = 16
     output_path = (
             "output/finetune-batch-hard-trec-"
-            + model_name
+            + model_name + "-" + epochs
             + "-"
             + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     )
-    num_epochs = 15
+    num_epochs = epochs
     logging.info("Loading aspect dataset")
     train_set, dev_set, test_set = aspect_data(filename)
     # Load pretrained model
@@ -235,4 +235,5 @@ if __name__ == '__main__':
     parser.add_argument('--merge_file', help='3.2 merge file',
                         required=True)
     args = parser.parse_args()
-    main(args.merge_file)
+    for epoch in range(1, 11):
+        main(args.merge_file, epoch)
