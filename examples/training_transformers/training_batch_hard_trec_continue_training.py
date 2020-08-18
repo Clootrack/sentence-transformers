@@ -175,7 +175,7 @@ def main(filename, epochs):
     train_batch_size = 16
     output_path = (
             "output/finetune-batch-hard-trec-"
-            + model_name + "-" + epochs
+            + model_name + "-" + str(epochs)
             + "-"
             + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     )
