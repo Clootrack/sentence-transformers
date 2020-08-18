@@ -179,7 +179,7 @@ def main(filename):
             + "-"
             + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     )
-    num_epochs = 5
+    num_epochs = 10
     logging.info("Loading aspect dataset")
     train_set, dev_set, test_set = aspect_data(filename)
     # Load pretrained model
